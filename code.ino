@@ -1,11 +1,11 @@
 #include <Servo.h>
 
 int m1p1 = 2;
-int m1p2 = 3;
-int ena1 = 1; 
-int m2p1 = 5;
-int m2p2 = 6;
-int ena2 = 4;
+int m1p2 = 4;
+int ena1 = 3; 
+int m2p1 = 7;
+int m2p2 = 5;
+int ena2 = 6;
 int echo = 12;
 int trig = 13;
 long duration;
@@ -18,7 +18,8 @@ void forward();
 void reverseLeft();
 void reverseRight();
 void reverse();
-
+int servoRight();
+int servoLeft();
 void turnLeft();
 void turnRight();
 
@@ -88,6 +89,8 @@ int distance() {
   return duration * 0.034 / 2;
 }
 
+
+
 void turnLeft() {
   stop();
   delay(1000);
@@ -122,22 +125,53 @@ void turnRight() {
   delay(500);
 }
 
+int servoRight() {
+  myServo.write(180);
+  return distance();
+}
+
+int servoLeft() {
+  myServo.write(0);
+  return distance();
+}
+
+int rightDist = servoRight();
+int leftDist = servoLeft();
+
 void loop() {
   int Fdistance = distance();
 
   forward();
   
-  if (Fdistance <= 10) {
-    turnLeft();
-  }
+  if (Fdistance <= 20) {
+    stop();
+    servoRight();
+    servoLeft();
 
+    if (rightDist > leftDist) {
+      reverse();
+      delay(500);
+      reverseRight();
+      delay(500);
+      forward();
+    }
 
-  else {
-    myServo.write(90);
+    else if (rightDist < leftDist) {
+      reverse();
+      delay(500);
+      reverseLeft();
+      delay(500);
+      myServo.write(90);
+
+    }
+
+    else {
+      myServo.write(90);
+      forward();
+    }
+
   }
 
   delay(100);
 
 }
-
-
